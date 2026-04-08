@@ -20,104 +20,47 @@
  */
 /**
  */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+public class GameEngine {
+    private Maze maze;
+    private Player player;
+    private ScoreTracker scoreTracker;
+    private boolean gameOver;
 
-public class GameEngine extends JFrame {
-    private GameEngine engine;
-    private JPanel mazePanel;
-    private JLabel statusLabel;
-
-    private final int CELL_SIZE = 40; // pixels per cell
-
+    // Constructor
     public GameEngine(int rows, int cols) {
-        engine = new GameEngine(rows, cols);
-
-        setTitle("Maze Game");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
-
-        // Maze drawing panel
-        mazePanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                drawMaze(g);
-            }
-        };
-        mazePanel.setPreferredSize(new Dimension(cols * CELL_SIZE, rows * CELL_SIZE));
-        add(mazePanel, BorderLayout.CENTER);
-
-        // Status label
-        statusLabel = new JLabel("Score: 0");
-        add(statusLabel, BorderLayout.SOUTH);
-
-        // Key listener for movement
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                String dir = null;
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP: dir = "UP"; break;
-                    case KeyEvent.VK_DOWN: dir = "DOWN"; break;
-                    case KeyEvent.VK_LEFT: dir = "LEFT"; break;
-                    case KeyEvent.VK_RIGHT: dir = "RIGHT"; break;
-                }
-                if (dir != null) {
-                    engine.movePlayer(dir);
-                    statusLabel.setText("Score: " + engine.getScoreTracker().getScore());
-                    mazePanel.repaint();
-
-                    if (engine.isGameOver()) {
-                        JOptionPane.showMessageDialog(GameEngine.this, "You Win!");
-                    }
-                }
-            }
-        });
-
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        // Focus for key events
-        mazePanel.setFocusable(true);
-        mazePanel.requestFocusInWindow();
+        this.maze = new Maze(rows, cols);
+        this.player = new Player(maze.getStartRow(), maze.getStartCol());
+        this.scoreTracker = new ScoreTracker();
+        this.gameOver = false;
     }
 
-    private void drawMaze(Graphics g) {
-        Maze maze = engine.getMaze();
-        Player player = engine.getPlayer();
-
-        for (int r = 0; r < maze.getRows(); r++) {
-            for (int c = 0; c < maze.getCols(); c++) {
-                if (maze.isWall(r, c)) {
-                    g.setColor(Color.BLACK);
-                } else {
-                    g.setColor(Color.WHITE);
-                }
-                g.fillRect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                g.setColor(Color.GRAY);
-                g.drawRect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            }
+    // Methods
+    public void movePlayer(String direction) {
+        if (!gameOver) {
+            player.move(direction, maze);
+            scoreTracker.updateScore(player);
+            checkGameState();
         }
-
-        // Draw player
-        g.setColor(Color.RED);
-        g.fillOval(player.getCol() * CELL_SIZE + 5, player.getRow() * CELL_SIZE + 5,
-                   CELL_SIZE - 10, CELL_SIZE - 10);
-
-        // Draw exit
-        g.setColor(Color.GREEN);
-        int exitRow = maze.getExitRow();
-        int exitCol = maze.getExitCol();
-        g.fillRect(exitCol * CELL_SIZE + 10, exitRow * CELL_SIZE + 10, CELL_SIZE - 20, CELL_SIZE - 20);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GameEngine(10, 10));
+    private void checkGameState() {
+        if (player.hasReachedExit(maze)) {
+            gameOver = true;
+            System.out.println("You Win!");
+        }
     }
-}
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public Maze getMaze() {
+        return maze;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
 
     public ScoreTracker getScoreTracker() {
         return scoreTracker;
