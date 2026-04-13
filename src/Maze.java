@@ -20,48 +20,93 @@
  */
 /**
  */
+import java.util.Random;
+
 public class Maze {
     private Tile[][] grid;
-    private int startRow, startCol;
-    private int exitRow, exitCol;
+    private int rows;
+    private int cols;
+    private int totalKeys;
 
-    // Constructor
     public Maze(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
         grid = new Tile[rows][cols];
-        generateMaze();
+        for (int r = 0; r < rows; r++)
+            for (int c = 0; c < cols; c++)
+                grid[r][c] = new Tile();
     }
 
-    private void generateMaze() {
-        // Fill grid with walls and empty tiles, place exit, keys, and traps
-        // (simplified for proposal)
-        startRow = 0;
-        startCol = 0;
-        exitRow = grid.length - 1;
-        exitCol = grid[0].length - 1;
-    }
+    // --- Existing methods ---
 
-    public boolean isWalkable(int row, int col) {
-        return row >= 0 && row < grid.length && col >= 0 && col < grid[0].length && !grid[row][col].isWall();
-    }
+    public void generateMaze() {
+        Random rand = new Random();
+        totalKeys = 3;
 
-    public boolean hasKey(int row, int col) { return grid[row][col].hasKey(); }
-    public void collectKey(int row, int col) { grid[row][col].setKey(false); }
+        
+            // 1. Fill with walls/paths (Your existing logic)
+     // Place walls randomly
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                if (rand.nextDouble() < 0.1) grid[i][j].setWall(true);
 
-    public boolean hasTrap(int row, int col) { return grid[row][col].hasTrap(); }
-    public int triggerTrap(int row, int col) { return grid[row][col].triggerTrap(); }
+        // Place keys
+        for (int i = 0; i < totalKeys; i++) {
+            int r, c;
+            do {
+                r = rand.nextInt(rows); c = rand.nextInt(cols);
+            } while (grid[r][c].isWall() || grid[r][c].hasKey());
+            grid[r][c].placeKey();
+        }
 
-    public int getStartRow() { return startRow; }
-    public int getStartCol() { return startCol; }
-    public int getExitRow() { return exitRow; }
-    public int getExitCol() { return exitCol; }
+        // Place traps
+        for (int i = 0; i < 4; i++) {
+            int r, c;
+            do {
+                r = rand.nextInt(rows); c = rand.nextInt(cols);
+            } while (grid[r][c].isWall() || grid[r][c].hasKey());
+            grid[r][c].placeTrap(1);
+        }
 
-    public int totalKeys() {
-        int count = 0;
-        for (Tile[] row : grid) {
-            for (Tile t : row) {
-                if (t.hasKey()) count++;
+        // Place exit
+        int r, c;
+        do {
+            r = rand.nextInt(rows); c = rand.nextInt(cols);
+        } while (grid[r][c].isWall() || grid[r][c].hasKey());
+        grid[r][c].setExit(true);
+        
+            
+            // 2. Scatter Keys
+            int keysPlaced = 0;
+            while (keysPlaced < totalKeys) {
+                int r1 = (int) (Math.random() * rows);
+                int c1 = (int) (Math.random() * cols);
+                if (!grid[r1][c1].isWall() && !grid[r1][c1].hasKey() && !grid[r1][c1].isExit()) {
+                    grid[r1][c1].placeKey();
+                    keysPlaced++;
+                }
+            }
+
+            // 3. Scatter Traps
+            for (int i = 0; i < (rows * cols) / 10; i++) { // Place traps on ~10% of tiles
+                int r1 = (int) (Math.random() * rows);
+                int c1 = (int) (Math.random() * cols);
+                if (!grid[r1][c1].isWall() && !grid[r1][c1].hasKey() && !grid[r1][c1].isExit()) {
+                    grid[r1][c1].placeTrap(1); // Deals 1 damage
+                }
             }
         }
-        return count;
+
+    public Tile getTile(int row, int col) { return grid[row][col]; }
+
+    public boolean isValidMove(int row, int col) {
+        return row >= 0 && row < rows && col >= 0 && col < cols && !grid[row][col].isWall();
     }
+
+    public int getTotalKeys() { return totalKeys; }
+
+    // --- NEW METHODS ---
+    public int getRows() { return rows; }
+
+    public int getCols() { return cols; }
 }
