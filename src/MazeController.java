@@ -33,38 +33,47 @@ public class MazeController {
                 int newRow = player.getRow();
                 int newCol = player.getCol();
 
+                // Handle movement input
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_W: newRow--; break;
                     case KeyEvent.VK_S: newRow++; break;
                     case KeyEvent.VK_A: newCol--; break;
                     case KeyEvent.VK_D: newCol++; break;
-                    default: return;
+                    default: return; // Ignore other keys
                 }
 
+                // Check if the move is valid (within bounds and not a wall)
                 if (maze.isValidMove(newRow, newCol)) {
                     player.moveTo(newRow, newCol);
-
                     Tile t = maze.getTile(newRow, newCol);
-                    if (t.hasKey()) { player.collectKey(); t.removeKey(); }
-                    if (t.hasTrap()) { player.takeDamage(1); }
+
+                    // 1. Handle Key Collection
+                    if (t.hasKey()) { 
+                        player.collectKey(); 
+                        t.removeKey(); 
+                    }
+
+                    // 2. Handle Trap Interaction
+                    if (t.hasTrap()) { 
+                        // Casting getTrap() to (Trap) allows access to getDamage()
+                        Trap trapObj = (Trap) t.getTrap();
+                        player.takeDamage(trapObj.getDamage()); 
+                    }
+
+                    // 3. Check for Win Condition
                     if (t.isExit() && player.getKeysCollected() == maze.getTotalKeys()) {
                         JOptionPane.showMessageDialog(gui, "You escaped the maze!");
                         System.exit(0);
                     }
+
+                    // 4. Check for Loss Condition
                     if (player.getHealth() <= 0) {
                         JOptionPane.showMessageDialog(gui, "You died! Game over.");
                         System.exit(0);
                     }
 
+                    // Refresh the screen
                     gui.repaint();
-                }
-                Tile t = maze.getTile(newRow, newCol);
-                if (t.hasKey()) {
-                    player.collectKey();
-                    t.removeKey(); // collects the Key
-                }
-                if (t.hasTrap()) {
-                    player.takeDamage(t.getTrap().getDamage());
                 }
             }
         });
