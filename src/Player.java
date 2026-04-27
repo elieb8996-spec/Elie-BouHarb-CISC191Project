@@ -21,39 +21,47 @@
  */
 /**
  */
+/**
+ * Player HAS-A position, health, and key count.
+ */
 public class Player {
 
-    private int row, col;
+    private int row;
+    private int col;
     private int health;
     private int keysCollected;
 
-    public Player(int row, int col, int health) {
-        this.row = row;
-        this.col = col;
+    public Player(int startRow, int startCol, int health) {
+        this.row = startRow;
+        this.col = startCol;
         this.health = health;
         this.keysCollected = 0;
     }
 
-    public int getRow() { return row; }
-    public int getCol() { return col; }
-
-    public int getHealth() { return health; }
-
-    public int getKeysCollected() { return keysCollected; }
-
-    public void moveTo(int r, int c) {
-        row = r;
-        col = c;
+    public void moveTo(int newRow, int newCol) {
+        this.row = newRow;
+        this.col = newCol;
     }
 
     public void collectKey() {
         keysCollected++;
     }
 
-    public void takeDamage(int dmg) {
-        health -= dmg;
+    public void takeDamage(int damage) {
+        health -= damage;
     }
+
     public boolean canExit(int totalKeys) {
         return keysCollected == totalKeys;
     }
+
+    public boolean isAlive() {
+        return health > 0;
+    }
+
+    // Getters
+    public int getRow() { return row; }
+    public int getCol() { return col; }
+    public int getHealth() { return health; }
+    public int getKeysCollected() { return keysCollected; }
 }
