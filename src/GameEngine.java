@@ -25,56 +25,56 @@
  */
 /**
  */
+/**
+ * GameEngine HAS-A Maze and Player.
+ * Handles core game logic.
+ */
 public class GameEngine {
 
     private Maze maze;
     private Player player;
-    private ScoreTracker scoreTracker;
 
-    /**
-     * Constructor
-     */
-    public GameEngine(int rows, int cols) {
-        maze = new Maze(rows, cols);
-        maze.generateMaze();
+    public GameEngine(Maze maze, Player player) {
+        this.maze = maze;
+        this.player = player;
+    }
 
-        player = new Player(
-                maze.getStartRow(),
-                maze.getStartCol(),
-                10 // starting health
-        );
+    // =========================
+    // MOVE PLAYER
+    // =========================
+    public void movePlayer(int newRow, int newCol) {
 
-        scoreTracker = new ScoreTracker(); // initialize
+        if (!maze.isValidMove(newRow, newCol)) return;
+
+        player.moveTo(newRow, newCol);
+
+        Tile tile = maze.getTile(newRow, newCol);
+        tile.onEnter(player);
+    }
+
+    // =========================
+    // WIN CONDITION
+    // =========================
+    public boolean checkWin() {
+        Tile tile = maze.getTile(player.getRow(), player.getCol());
+        return tile.isExit() && player.canExit(maze.getTotalKeys());
+    }
+
+    // =========================
+    // LOSE CONDITION
+    // =========================
+    public boolean checkLose() {
+        return !player.isAlive();
     }
 
     // =========================
     // GETTERS
     // =========================
-    public Maze getMaze() {
-        return maze;
-    }
-
     public Player getPlayer() {
         return player;
     }
 
-    public ScoreTracker getScoreTracker() {
-        return scoreTracker;
+    public Maze getMaze() {
+        return maze;
     }
-
-    // =========================
-    // RESET GAME
-    // =========================
-    public void resetGame() {
-        maze.generateMaze();
-
-        player = new Player(
-                maze.getStartRow(),
-                maze.getStartCol(),
-                10
-        );
-        scoreTracker = new ScoreTracker(); // reset scores
-
-    }
-    
 }
