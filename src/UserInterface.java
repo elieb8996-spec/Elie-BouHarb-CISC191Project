@@ -22,6 +22,12 @@
  */
 import java.util.Scanner;
 
+/**
+ * UserInterface provides a console-based version of the game.
+ * It is used for testing and debugging the Maze logic.
+ * 
+ * UserInterface HAS-A Maze and Player.
+ */
 public class UserInterface {
 
     public static void main(String[] args) {
@@ -75,15 +81,17 @@ public class UserInterface {
             tile.onEnter(player);
 
             // ===== WIN CONDITION =====
-            if (tile.isExit() &&
+            if (tile instanceof ExitTile &&
                 player.getKeysCollected() == maze.getTotalKeys()) {
 
+                printMaze(maze, player);
                 System.out.println("🎉 YOU WIN!");
                 break;
             }
 
             // ===== LOSE CONDITION =====
             if (player.getHealth() <= 0) {
+                printMaze(maze, player);
                 System.out.println("💀 GAME OVER");
                 break;
             }
@@ -93,7 +101,7 @@ public class UserInterface {
     }
 
     // =========================
-    // PRINT MAZE
+    // PRINT MAZE (TEXT VERSION)
     // =========================
     private static void printMaze(Maze maze, Player player) {
 
@@ -103,7 +111,7 @@ public class UserInterface {
                 if (r == player.getRow() && c == player.getCol()) {
                     System.out.print("P ");
                 } else {
-                    System.out.print(maze.getTile(r, c).getSymbol() + " ");
+                    System.out.print(getSymbol(maze.getTile(r, c)) + " ");
                 }
             }
             System.out.println();
@@ -111,5 +119,12 @@ public class UserInterface {
 
         System.out.println("Health: " + player.getHealth() +
                            " | Keys: " + player.getKeysCollected());
+    }
+
+    // =========================
+    // SYMBOLS (console only)
+    // =========================
+    private static String getSymbol(Tile tile) {
+        return tile.getSymbol();
     }
 }
