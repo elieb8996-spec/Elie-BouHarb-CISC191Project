@@ -14,16 +14,30 @@
  *
  * Oracle. “Method Overriding.” Java Platform SE Documentation.
  * https://docs.oracle.com/javase/tutorial/java/IandI/override.html
- * Version/date: 04-20-2026
+ * Oracle. (n.d.). Graphics (Java Platform SE Documentation).
+ * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
+ * Oracle. BufferedImage. Java Platform SE 8 Documentation
+ * https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferedImage.html
+ * Version/date: 04-27-2026
  * 
  * Responsibilities of class:
  * 
  */
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+/**
+ * TrapTile IS-A Tile
+ * TrapTile HAS-A BufferedImage
+ * TrapTile HAS-A damage value
+ */
 public class TrapTile extends Tile {
 
+    private BufferedImage image;
     private int damage;
 
-    public TrapTile(int damage) {
+    public TrapTile(BufferedImage image, int damage) {
+        this.image = image;
         this.damage = damage;
     }
 
@@ -33,7 +47,8 @@ public class TrapTile extends Tile {
     }
 
     @Override
-    public String getSymbol() {
-        return "T";
+    public void draw(Graphics g, int x, int y, int size) {
+        if (image != null)
+            g.drawImage(image, x, y, size, size, null);
     }
 }
