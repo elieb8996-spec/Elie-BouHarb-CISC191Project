@@ -15,20 +15,43 @@
  *
  * Oracle. “Method Overriding.” Java Platform SE Documentation.
  * https://docs.oracle.com/javase/tutorial/java/IandI/override.html
- * Version/date: 04-20-2026
+ * Oracle. (n.d.). Graphics (Java Platform SE Documentation).
+ * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
+ * Oracle. BufferedImage. Java Platform SE 8 Documentation
+ * https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferedImage.html
+ * Version/date: 04-27-2026
  * 
  * Responsibilities of class:
  * 
  */
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+/**
+ * WallTile IS-A Tile
+ * WallTile HAS-A BufferedImage
+ */
 public class WallTile extends Tile {
 
-    @Override
-    public boolean isWall() {
-        return true;
+    private BufferedImage image;
+
+    public WallTile(BufferedImage image) {
+        this.image = image;
     }
 
     @Override
-    public String getSymbol() {
-        return "#";
+    public void onEnter(Player player) {
+        // Cannot enter
+    }
+
+    @Override
+    public boolean isWalkable() {
+        return false;
+    }
+
+    @Override
+    public void draw(Graphics g, int x, int y, int size) {
+        if (image != null)
+            g.drawImage(image, x, y, size, size, null);
     }
 }
