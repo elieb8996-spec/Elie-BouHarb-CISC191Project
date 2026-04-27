@@ -11,24 +11,36 @@
  *
  * Oracle. “Inheritance.” Java Platform SE Documentation.
  * https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html
- *  Version/date: 04-20-2026
- *  Responsibilities of class: Defines the base behavior for all tile types using polymorphism.
+ * Oracle. (n.d.). Graphics (Java Platform SE Documentation).
+ * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
+ *  Version/date: 04-27-2026
+ *  Responsibilities of class: 
+ */
+import java.awt.Graphics;
+
+/**
+ * Tile IS-A base abstract class for all tiles.
+ * 
+ * Responsibilities:
+ * - Defines behavior when player enters
+ * - Defines how tile is drawn
  */
 public abstract class Tile {
 
-    public boolean isWall() {
-        return false;
-    }
+    /**
+     * Called when player steps on this tile
+     */
+    public abstract void onEnter(Player player);
 
-    public boolean isExit() {
-        return false;
-    }
+    /**
+     * Draw this tile
+     */
+    public abstract void draw(Graphics g, int x, int y, int size);
 
-    public void onEnter(Player player) {
-        // Default: do nothing
-    }
-
-    public String getSymbol() {
-        return ".";
+    /**
+     * Can the player walk on this tile?
+     */
+    public boolean isWalkable() {
+        return true;
     }
 }
