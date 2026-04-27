@@ -53,4 +53,7 @@ public class Player {
     public void takeDamage(int dmg) {
         health -= dmg;
     }
+    public boolean canExit(int totalKeys) {
+        return keysCollected == totalKeys;
+    }
 }
