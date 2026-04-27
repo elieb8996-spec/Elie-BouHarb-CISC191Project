@@ -2,105 +2,107 @@
  * Lead Author(s):
  * @author Elie BouHarb
  * @author 
- * <<add additional lead authors here, with a full first and last name>>
- * 
- * Other contributors:
- * <<add additional contributors (mentors, tutors, friends) here, with contact information>>
- * 
- * References:
+ * * References:
  * Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented Problem Solving.
  * Retrieved from https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
- * 
- * 
+ * Oracle. “Class SwingUtilities.” Java Platform SE 8 Documentation, Oracle, https://docs.oracle.com/javase/8/docs/api/javax/swing/SwingUtilities.html.
+ * Oracle. “Class CardLayout.” Java Platform SE 8 Documentation, Oracle, https://docs.oracle.com/javase/8/docs/api/java/awt/CardLayout.html.
  * Oracle. “Class JFrame.” Java Platform SE 8 Documentation.
  * https://docs.oracle.com/javase/8/docs/api/javax/swing/JFrame.html
- *
  * Oracle. “Class JPanel.” Java Platform SE 8 Documentation.
  * https://docs.oracle.com/javase/8/docs/api/javax/swing/JPanel.html
- * Oracle. “Class KeyEvent.” Java Platform SE 8 Documentation.
- * https://docs.oracle.com/javase/8/docs/api/java/awt/event/KeyEvent.html
- * Oracle. “Class KeyAdapter.” Java Platform SE 8 Documentation.
- * https://docs.oracle.com/javase/8/docs/api/java/awt/event/KeyAdapter.html.
- *  
- * Version/date: 04-27-2026
- * 
- * Responsibilities of class:Handles player input, updates model and GUI
- * 
+ * * Version/date: 04-13-2026
+ * * Responsibilities of class: Runs game, initializes MVC components, and displays GUI. Main entry point. Manages the CardLayout 
+ * to switch between the Main Menu and the Maze Game. Orchestrates the MVC components and manages screen transitions.
  */
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * MazeController HAS-A Maze, Player, and View.
- * Handles input and game flow using polymorphism.
+ * MazeGameGUI runs the application and manages screen transitions.
+ * MazeGameGUI HAS-A MainMenu, MazeGUI, GameEngine, and MazeController.
  */
-public class MazeController {
+public class MazeGameGUI {
 
-    private Maze maze;
-    private Player player;
-    private MazeGUI view;
+    private JFrame frame;
+    private CardLayout layout;
+    private JPanel container;
+
+    private GameEngine engine;
+    private MazeGUI gameView;
+    private MazeController controller;
     private MainMenu menu;
 
-    public MazeController(Maze maze, Player player, MazeGUI view) {
-        this.maze = maze;
-        this.player = player;
-        this.view = view;
+    public MazeGameGUI() {
 
-        setupControls();
+        // =========================
+        // WINDOW SETUP
+        // =========================
+        frame = new JFrame("Maze Escape Adventure");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        layout = new CardLayout();
+        container = new JPanel(layout);
+
+        // =========================
+        // CREATE MENU
+        // =========================
+        menu = new MainMenu(layout, container);
+        menu.setApp(this);
+
+        container.add(menu, "MENU");
+
+        // =========================
+        // FINALIZE WINDOW
+        // =========================
+        frame.add(container);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        layout.show(container, "MENU");
     }
 
-    public void setMenu(MainMenu menu) {
-        this.menu = menu;
+    // =========================
+    // START / RESTART GAME
+    // =========================
+    public void startGame() {
+
+        // 1. Create Maze
+        Maze maze = new Maze(10, 10);
+        maze.generateMaze();
+
+        // 2. Create Player
+        Player player = new Player(
+                maze.getStartRow(),
+                maze.getStartCol(),
+                10
+        );
+
+        // 3. Create Engine (FIXED)
+        engine = new GameEngine(maze, player);
+
+        // 4. Create View
+        gameView = new MazeGUI(maze, player);
+
+        // 5. Create Controller
+        controller = new MazeController(engine, gameView);
+        controller.setMenu(menu);
+
+        // 6. Replace GAME screen (prevents duplicates)
+        container.add(gameView, "GAME");
+
+        // 7. Show game
+        layout.show(container, "GAME");
+
+        // 8. Enable keyboard input
+        gameView.requestFocusInWindow();
     }
 
-    private void setupControls() {
-
-        view.addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-                int newRow = player.getRow();
-                int newCol = player.getCol();
-
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_W: newRow--; break;
-                    case KeyEvent.VK_S: newRow++; break;
-                    case KeyEvent.VK_A: newCol--; break;
-                    case KeyEvent.VK_D: newCol++; break;
-                    default: return;
-                }
-
-                // ===== VALID MOVE =====
-                if (!maze.isValidMove(newRow, newCol)) return;
-
-                // Move player
-                player.moveTo(newRow, newCol);
-
-                // ===== TILE INTERACTION =====
-                Tile tile = maze.getTile(newRow, newCol);
-                tile.onEnter(player);
-
-                // ===== WIN CONDITION (NO instanceof) =====
-                if (tile.isExit() && player.canExit(maze.getTotalKeys())) {
-                    if (menu != null) {
-                        menu.showGameOver("YOU WIN!");
-                    }
-                }
-
-                // ===== LOSE CONDITION =====
-                if (player.getHealth() <= 0) {
-                    if (menu != null) {
-                        menu.showGameOver("GAME OVER");
-                    }
-                }
-
-                // Refresh
-                view.repaint();
-            }
-        });
-
-        view.setFocusable(true);
-        view.requestFocusInWindow();
+    // =========================
+    // MAIN METHOD
+    // =========================
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new MazeGameGUI());
     }
 }
