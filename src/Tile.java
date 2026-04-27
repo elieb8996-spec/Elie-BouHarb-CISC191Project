@@ -19,27 +19,16 @@
 import java.awt.Graphics;
 
 /**
- * Tile IS-A base abstract class for all tiles.
- * 
- * Responsibilities:
- * - Defines behavior when player enters
- * - Defines how tile is drawn
+ * Tile IS-A base abstract class.
  */
 public abstract class Tile {
 
-    /**
-     * Called when player steps on this tile
-     */
     public abstract void onEnter(Player player);
 
-    /**
-     * Draw this tile
-     */
     public abstract void draw(Graphics g, int x, int y, int size);
 
-    /**
-     * Can the player walk on this tile?
-     */
+    public abstract String getSymbol();
+
     public boolean isWalkable() {
         return true;
     }
