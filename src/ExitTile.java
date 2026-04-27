@@ -47,4 +47,11 @@ public class ExitTile extends Tile {
         if (image != null)
             g.drawImage(image, x, y, size, size, null);
     }
+    @Override
+    public String getSymbol() {
+        return "E";
+    }
+    public boolean isExit() {
+        return true;
+    }
 }
