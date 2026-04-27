@@ -22,7 +22,7 @@
  * Oracle. “Class KeyAdapter.” Java Platform SE 8 Documentation.
  * https://docs.oracle.com/javase/8/docs/api/java/awt/event/KeyAdapter.html.
  *  
- * Version/date: 04-07-2026
+ * Version/date: 04-27-2026
  * 
  * Responsibilities of class:Handles player input, updates model and GUI
  * 
@@ -30,6 +30,10 @@
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * MazeController HAS-A Maze, Player, and View.
+ * Handles input and game flow using polymorphism.
+ */
 public class MazeController {
 
     private Maze maze;
@@ -52,6 +56,7 @@ public class MazeController {
     private void setupControls() {
 
         view.addKeyListener(new KeyAdapter() {
+
             @Override
             public void keyPressed(KeyEvent e) {
 
@@ -72,14 +77,12 @@ public class MazeController {
                 // Move player
                 player.moveTo(newRow, newCol);
 
-                // ===== TILE INTERACTION (POLYMORPHISM) =====
+                // ===== TILE INTERACTION =====
                 Tile tile = maze.getTile(newRow, newCol);
                 tile.onEnter(player);
 
-                // ===== WIN CONDITION =====
-                if (tile instanceof ExitTile &&
-                        player.getKeysCollected() == maze.getTotalKeys()) {
-
+                // ===== WIN CONDITION (NO instanceof) =====
+                if (tile.isExit() && player.canExit(maze.getTotalKeys())) {
                     if (menu != null) {
                         menu.showGameOver("YOU WIN!");
                     }
@@ -92,12 +95,11 @@ public class MazeController {
                     }
                 }
 
-                // Refresh screen
+                // Refresh
                 view.repaint();
             }
         });
 
-        //ensure input works
         view.setFocusable(true);
         view.requestFocusInWindow();
     }
