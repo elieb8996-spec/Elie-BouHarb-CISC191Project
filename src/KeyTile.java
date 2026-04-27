@@ -17,14 +17,28 @@
  *
  * Oracle. “Encapsulation.” Java Platform SE Documentation.
  * https://docs.oracle.com/javase/tutorial/java/javaOO/encapsulation.html
+ * Oracle. (n.d.). Graphics (Java Platform SE Documentation).
+ * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
  * Version/date: 04-20-2026
  * 
  * Responsibilities of class:
  * 
  */
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+/**
+ * KeyTile IS-A Tile
+ * KeyTile HAS-A BufferedImage
+ */
 public class KeyTile extends Tile {
 
+    private BufferedImage image;
     private boolean collected = false;
+
+    public KeyTile(BufferedImage image) {
+        this.image = image;
+    }
 
     @Override
     public void onEnter(Player player) {
@@ -35,7 +49,9 @@ public class KeyTile extends Tile {
     }
 
     @Override
-    public String getSymbol() {
-        return collected ? "." : "K";
+    public void draw(Graphics g, int x, int y, int size) {
+        if (!collected && image != null) {
+            g.drawImage(image, x, y, size, size, null);
+        }
     }
 }
