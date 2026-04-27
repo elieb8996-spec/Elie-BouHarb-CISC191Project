@@ -111,7 +111,7 @@ public class UserInterface {
                 if (r == player.getRow() && c == player.getCol()) {
                     System.out.print("P ");
                 } else {
-                    System.out.print(getSymbol(maze.getTile(r, c)) + " ");
+                    System.out.print(maze.getTile(r, c).getSymbol() + " ");
                 }
             }
             System.out.println();
