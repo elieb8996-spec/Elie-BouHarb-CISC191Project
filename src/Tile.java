@@ -32,4 +32,7 @@ public abstract class Tile {
     public boolean isWalkable() {
         return true;
     }
+    public boolean isExit() {
+        return false;
+    }
 }
