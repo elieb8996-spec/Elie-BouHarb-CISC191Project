@@ -19,29 +19,17 @@
  * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
  * Oracle. BufferedImage. Java Platform SE 8 Documentation
  * https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferedImage.html
- * Version/date: 04-27-2026
+ * Version/date: 05-04-2026
  * 
  * Responsibilities of class:
  * 
  */
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.*;
 
-/**
- * WallTile IS-A Tile
- * WallTile HAS-A BufferedImage
- */
 public class WallTile extends Tile {
 
-    private BufferedImage image;
-
-    public WallTile(BufferedImage image) {
-        this.image = image;
-    }
-
-    @Override
-    public void onEnter(Player player) {
-        // Cannot enter
+    public WallTile() {
+        super("/assets/wall.png");
     }
 
     @Override
@@ -50,8 +38,18 @@ public class WallTile extends Tile {
     }
 
     @Override
-    public void draw(Graphics g, int x, int y, int size) {
-        if (image != null)
-            g.drawImage(image, x, y, size, size, null);
+    public boolean isOccupied() {
+        return true;
+    }
+
+    @Override
+    public void onEnter(Player player) {
+        // player cannot enter
+    }
+
+    @Override
+    protected void drawFallback(Graphics g, int x, int y, int size) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(x, y, size, size);
     }
 }
