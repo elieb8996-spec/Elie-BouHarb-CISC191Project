@@ -18,26 +18,19 @@
  * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
  * Oracle. BufferedImage. Java Platform SE 8 Documentation
  * https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferedImage.html
- * Version/date: 04-27-2026
+ * Version/date: 05-04-2026
  * 
  * Responsibilities of class:
  * 
  */
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.*;
 
-/**
- * TrapTile IS-A Tile
- * TrapTile HAS-A BufferedImage
- * TrapTile HAS-A damage value
- */
 public class TrapTile extends Tile {
 
-    private BufferedImage image;
     private int damage;
 
-    public TrapTile(BufferedImage image, int damage) {
-        this.image = image;
+    public TrapTile(int damage) {
+        super("/assets/trap.png");
         this.damage = damage;
     }
 
@@ -47,8 +40,13 @@ public class TrapTile extends Tile {
     }
 
     @Override
-    public void draw(Graphics g, int x, int y, int size) {
-        if (image != null)
-            g.drawImage(image, x, y, size, size, null);
+    public boolean isOccupied() {
+        return true;
+    }
+
+    @Override
+    protected void drawFallback(Graphics g, int x, int y, int size) {
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(x, y, size, size);
     }
 }
