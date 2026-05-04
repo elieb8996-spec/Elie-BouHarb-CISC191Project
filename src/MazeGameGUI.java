@@ -1,3 +1,20 @@
+/**
+ * Lead Author(s):
+ * @author Elie BouHarb
+ * @author 
+ * * References:
+ * Morelli, R., & Walde, R. (2016). Java, Java, Java: Object-Oriented Problem Solving.
+ * Retrieved from https://open.umn.edu/opentextbooks/textbooks/java-java-java-object-oriented-problem-solving
+ * Oracle. “Class SwingUtilities.” Java Platform SE 8 Documentation, Oracle, https://docs.oracle.com/javase/8/docs/api/javax/swing/SwingUtilities.html.
+ * Oracle. “Class CardLayout.” Java Platform SE 8 Documentation, Oracle, https://docs.oracle.com/javase/8/docs/api/java/awt/CardLayout.html.
+ * Oracle. “Class JFrame.” Java Platform SE 8 Documentation.
+ * https://docs.oracle.com/javase/8/docs/api/javax/swing/JFrame.html
+ * Oracle. “Class JPanel.” Java Platform SE 8 Documentation.
+ * https://docs.oracle.com/javase/8/docs/api/javax/swing/JPanel.html
+ * * Version/date: 04-13-2026
+ * * Responsibilities of class: Runs game, initializes MVC components, and displays GUI. Main entry point. Manages the CardLayout 
+ * to switch between the Main Menu and the Maze Game. Orchestrates the MVC components and manages screen transitions.
+ */
 import javax.swing.*;
 import java.awt.*;
 
@@ -55,20 +72,20 @@ public class MazeGameGUI {
         Maze maze = new Maze(10, 10);
         maze.generateMaze();
 
-        //  Create Player
+        // Create Player
         Player player = new Player(
                 maze.getStartRow(),
                 maze.getStartCol(),
                 10
         );
 
-        //  Create Engine 
+        // Create Engine 
         engine = new GameEngine(maze, player);
 
-        //  Create View
+        // Create View
         gameView = new MazeGUI(maze, player);
 
-        //  Create Controller
+        // Create Controller
         controller = new MazeController(engine, gameView);
         controller.setMenu(menu);
 
@@ -85,6 +102,12 @@ public class MazeGameGUI {
     // =========================
     // MAIN METHOD
     // =========================
+    /**
+     * The GUI is created using SwingUtilities.invokeLater to ensure that
+     * all Swing components are initialized on the Event Dispatch Thread (EDT).
+     * This prevents potential threading issues and ensures proper rendering
+     * and handling of user input.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MazeGameGUI());
     }
