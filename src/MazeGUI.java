@@ -26,7 +26,7 @@
  * Oracle. “Class Dimension.” Java Platform SE 8 Documentation.
  * https://docs.oracle.com/javase/8/docs/api/java/awt/Dimension.html
  *  
- * Version/date: 04-13-2026
+ * Version/date: 05-04-2026
  * 
  * Responsibilities of class:Draws the maze, player, keys, traps, exit
  * 
@@ -35,11 +35,10 @@
  */
 import javax.swing.*;
 import java.awt.*;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 
 /**
- * View: Displays the maze, tiles, and player using assets.
+ * Responsibilities of class:
+ * Displays the maze and player using polymorphic Tile rendering.
  */
 public class MazeGUI extends JPanel {
 
@@ -47,14 +46,6 @@ public class MazeGUI extends JPanel {
     private Player player;
 
     private int tileSize = 64;
-
-    // Images (loaded from /assets/)
-    private BufferedImage floorImg;
-    private BufferedImage wallImg;
-    private BufferedImage keyImg;
-    private BufferedImage trapImg;
-    private BufferedImage exitImg;
-    private BufferedImage playerImg;
 
     public MazeGUI(Maze maze, Player player) {
         this.maze = maze;
@@ -66,84 +57,33 @@ public class MazeGUI extends JPanel {
         ));
 
         setFocusable(true);
-        requestFocusInWindow();
-
-        loadImages();
     }
 
-    // =========================
-    // LOAD IMAGES FROM ASSETS
-    // =========================
-    private void loadImages() {
-        try {
-            floorImg = ImageIO.read(getClass().getResource("/assets/floor.png"));
-            wallImg = ImageIO.read(getClass().getResource("/assets/wall.png"));
-            keyImg = ImageIO.read(getClass().getResource("/assets/key.png"));
-            trapImg = ImageIO.read(getClass().getResource("/assets/trap.png"));
-            exitImg = ImageIO.read(getClass().getResource("/assets/door.png"));
-            playerImg = ImageIO.read(getClass().getResource("/assets/player.png"));
-
-            System.out.println("✅ Assets loaded successfully");
-            System.out.println("Player image: " + playerImg);
-
-        } catch (Exception e) {
-            System.out.println("❌ Error loading assets (using fallback graphics)");
-        }
-    }
-
-    // =========================
-    // DRAW EVERYTHING
-    // =========================
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // ===== DRAW MAZE =====
+        // ===== DRAW MAZE (POLYMORPHIC) =====
         for (int r = 0; r < maze.getRows(); r++) {
             for (int c = 0; c < maze.getCols(); c++) {
 
                 Tile tile = maze.getTile(r, c);
 
-                BufferedImage img = floorImg;
-
-                if (tile instanceof WallTile) img = wallImg;
-                else if (tile instanceof KeyTile) img = keyImg;
-                else if (tile instanceof TrapTile) img = trapImg;
-                else if (tile instanceof ExitTile) img = exitImg;
-
-                int x = c * tileSize;
-                int y = r * tileSize;
-
-                if (img != null) {
-                    g.drawImage(img, x, y, tileSize, tileSize, null);
-                } else {
-                    // ===== FALLBACK COLORS =====
-                    if (tile instanceof WallTile) g.setColor(Color.DARK_GRAY);
-                    else if (tile instanceof KeyTile) g.setColor(Color.YELLOW);
-                    else if (tile instanceof TrapTile) g.setColor(Color.LIGHT_GRAY);
-                    else if (tile instanceof ExitTile) g.setColor(new Color(139, 69, 19));
-                    else g.setColor(Color.GRAY);
-
-                    g.fillRect(x, y, tileSize, tileSize);
-                }
+                tile.draw(g, c * tileSize, r * tileSize, tileSize);
             }
         }
 
-        // ===== DRAW PLAYER (ALWAYS ON TOP) =====
+        // ===== DRAW PLAYER =====
         int px = player.getCol() * tileSize;
         int py = player.getRow() * tileSize;
 
-        if (playerImg != null) {
-            g.drawImage(playerImg, px, py, tileSize, tileSize, null);
-        } else {
-            // fallback player (blue circle)
-            g.setColor(Color.BLUE);
-            g.fillOval(px + 10, py + 10, tileSize - 20, tileSize - 20);
-        }
+        g.setColor(Color.BLUE);
+        g.fillOval(px + 10, py + 10, tileSize - 20, tileSize - 20);
 
         // ===== HUD =====
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
+
         g.drawString(
                 "Health: " + player.getHealth() +
                 "   Keys: " + player.getKeysCollected(),
