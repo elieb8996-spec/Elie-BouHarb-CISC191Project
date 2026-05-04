@@ -13,7 +13,7 @@
  * https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html
  * Oracle. (n.d.). Graphics (Java Platform SE Documentation).
  * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
- *  Version/date: 04-27-2026
+ *  Version/date: 05-04-2026
  *  Responsibilities of class: 
  */
 import java.awt.Graphics;
