@@ -18,40 +18,36 @@
  * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
  * Oracle. BufferedImage. Java Platform SE 8 Documentation
  * https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferedImage.html
- *Version/date: 04-27-2026
+ *Version/date: 05-04-2026
  *Responsibilities of class:
  *
  */
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.*;
 
-/**
- * ExitTile IS-A Tile
- * ExitTile HAS-A BufferedImage
- */
 public class ExitTile extends Tile {
 
-    private BufferedImage image;
+    public ExitTile() {
+        super("/assets/door.png");
+    }
 
-    public ExitTile(BufferedImage image) {
-        this.image = image;
+    @Override
+    public boolean isExit() {
+        return true;
+    }
+
+    @Override
+    public boolean isOccupied() {
+        return true;
     }
 
     @Override
     public void onEnter(Player player) {
-        // Win logic handled in controller
+        // win condition handled in GameEngine
     }
 
     @Override
-    public void draw(Graphics g, int x, int y, int size) {
-        if (image != null)
-            g.drawImage(image, x, y, size, size, null);
-    }
-    @Override
-    public String getSymbol() {
-        return "E";
-    }
-    public boolean isExit() {
-        return true;
+    protected void drawFallback(Graphics g, int x, int y, int size) {
+        g.setColor(new Color(139, 69, 19));
+        g.fillRect(x, y, size, size);
     }
 }
