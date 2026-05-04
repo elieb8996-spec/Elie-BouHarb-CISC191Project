@@ -21,25 +21,19 @@
  * Retrieved from https://docs.oracle.com/javase/8/docs/api/java/awt/Graphics.html
  *Oracle. BufferedImage. Java Platform SE 8 Documentation 
  *https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferedImage.html
- * Version/date: 04-27-2026
+ * Version/date: 05-04-2026
  * 
  * Responsibilities of class:
  * 
  */
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.*;
 
-/**
- * KeyTile IS-A Tile
- * KeyTile HAS-A BufferedImage
- */
 public class KeyTile extends Tile {
 
-    private BufferedImage image;
     private boolean collected = false;
 
-    public KeyTile(BufferedImage image) {
-        this.image = image;
+    public KeyTile() {
+        super("/assets/key.png");
     }
 
     @Override
@@ -51,9 +45,15 @@ public class KeyTile extends Tile {
     }
 
     @Override
-    public void draw(Graphics g, int x, int y, int size) {
-        if (!collected && image != null) {
-            g.drawImage(image, x, y, size, size, null);
+    public boolean isOccupied() {
+        return !collected;
+    }
+
+    @Override
+    protected void drawFallback(Graphics g, int x, int y, int size) {
+        if (!collected) {
+            g.setColor(Color.YELLOW);
+            g.fillRect(x, y, size, size);
         }
     }
 }
