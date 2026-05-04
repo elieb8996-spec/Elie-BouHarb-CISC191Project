@@ -17,22 +17,51 @@
  *  Responsibilities of class: 
  */
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 /**
- * Tile IS-A base abstract class.
+ * Tile is an abstract base class.
+ * 
+ * A Tile IS-A game cell in the maze.
+ * Each Tile defines its own behavior and rendering.
  */
 public abstract class Tile {
 
+    protected BufferedImage image;
+
+    // =========================
+    // CONSTRUCTOR (LOAD IMAGE)
+    // =========================
+    public Tile(String imagePath) {
+        try {
+            image = ImageIO.read(getClass().getResource(imagePath));
+        } catch (Exception e) {
+            image = null; // fallback mode
+        }
+    }
+
+    // =========================
+    // POLYMORPHIC DRAW
+    // =========================
+    public void draw(Graphics g, int x, int y, int size) {
+        if (image != null) {
+            g.drawImage(image, x, y, size, size, null);
+        } else {
+            drawFallback(g, x, y, size);
+        }
+    }
+
+    protected abstract void drawFallback(Graphics g, int x, int y, int size);
+
+    // =========================
+    // GAME LOGIC (POLYMORPHIC)
+    // =========================
     public abstract void onEnter(Player player);
 
-    public abstract void draw(Graphics g, int x, int y, int size);
+    public boolean isWalkable() { return true; }
 
-    public abstract String getSymbol();
+    public boolean isExit() { return false; }
 
-    public boolean isWalkable() {
-        return true;
-    }
-    public boolean isExit() {
-        return false;
-    }
+    public boolean isOccupied() { return false; }
 }
